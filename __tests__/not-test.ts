@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
-import { LogicalStatement, LogicalStatementType, NotStatement, simplify } from '../lib';
+import {
+  LogicalStatement, LogicalStatementType, NotStatement, simplify,
+} from '../lib';
 import { simplifyNot } from '../lib/simplifiers/not';
 
 const nestedNot = (statement: LogicalStatement<string>): NotStatement<string> => ({
@@ -75,5 +77,40 @@ describe('Not handler tests', () => {
         statement: 'a',
       },
     });
+  });
+
+  it('Should manipulate empty statements', () => {
+    // // eslint-disable-next-line
+    // let simplify: (statement: LogicalStatement<boolean>) => LogicalStatementOutput<boolean>;
+
+    // beforeEach(() => {
+    //   // eslint-disable-next-line no-unused-vars
+    //   simplify = (statement: LogicalStatement<boolean>): LogicalStatementOutput<boolean> => ({
+    //     type: LogicalStatementType.empty,
+    //     statement: Boolean(statement.statement),
+    //   });
+    // });
+
+    // expect(simplifyNot({
+    //   type: LogicalStatementType.not,
+    //   statement: {
+    //     type: LogicalStatementType.statement,
+    //     statement: true,
+    //   },
+    // })).toEqual({
+    //   type: LogicalStatementType.empty,
+    //   statement: false,
+    // });
+
+    // expect(simplifyNot({
+    //   type: LogicalStatementType.not,
+    //   statement: {
+    //     type: LogicalStatementType.statement,
+    //     statement: false,
+    //   },
+    // })).toEqual({
+    //   type: LogicalStatementType.empty,
+    //   statement: true,
+    // });
   });
 });

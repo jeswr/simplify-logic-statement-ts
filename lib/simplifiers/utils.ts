@@ -42,6 +42,8 @@ export function applyCollectionElements<T>(collection: LogicalStatementCollectio
       case LogicalStatementType.statement:
         results[elem.type].push(elem);
         break;
+      default:
+        throw new Error(`Invalid element ${elem}`);
     }
   }
 

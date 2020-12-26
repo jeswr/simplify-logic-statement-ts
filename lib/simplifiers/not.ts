@@ -1,7 +1,6 @@
 import {
-  LogicalStatementType, AndStatement, LogicalStatementOutput, NotStatement,
+  LogicalStatementType, LogicalStatementOutput, NotStatement,
 } from '../types';
-import { applyCollectionElements } from './utils';
 import { simplify } from './index';
 
 export function simplifyNot<T>(not: NotStatement<T>): LogicalStatementOutput<T> {
