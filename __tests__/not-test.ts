@@ -108,7 +108,7 @@ describe('Not handler tests', () => {
       statement: false,
     });
 
-    expect(simplifyNot({
+    expect(simplify({
       type: LogicalStatementType.not,
       statement: {
         type: LogicalStatementType.or,
