@@ -28,7 +28,7 @@ export function simplifyAnd<T>(and: AndStatement<T>): LogicalStatementOutput<T> 
   return {
     type: LogicalStatementType.and,
     statement: {
-      not, or, xone, statement,
+      not, or, xone, statement, and: [],
     },
   };
 }

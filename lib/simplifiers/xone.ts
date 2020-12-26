@@ -8,7 +8,7 @@ export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<
   let emptyCount = 0;
   for (const element of applied.empty) {
     if (element.statement === true) {
-      emptyCount++;
+      emptyCount += 1;
       if (emptyCount > 1) {
         return { type: LogicalStatementType.empty, statement: false };
       }
@@ -38,9 +38,16 @@ export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<
       statement: {
         type: LogicalStatementType.and,
         statement: {
-          not, and, or, statement,
+          not, and, or, statement, xone: [],
         },
       },
     });
   }
+
+  return {
+    type: LogicalStatementType.xone,
+    statement: {
+      not, and, or, statement, xone: [],
+    },
+  };
 }

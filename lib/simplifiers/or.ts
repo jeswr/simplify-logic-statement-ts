@@ -30,7 +30,7 @@ export function simplifyOr<T>(or: OrStatement<T>): LogicalStatementOutput<T> {
   return {
     type: LogicalStatementType.or,
     statement: {
-      not, and, xone, statement,
+      not, and, xone, statement, or: [],
     },
   };
 }
