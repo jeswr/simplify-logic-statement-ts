@@ -12,7 +12,7 @@
     "lint": "eslint lib/* --ext .ts",
     "lint-fix": "eslint lib/* --ext .ts --fix",
     "build": "tsc",
-    "pre-publish": "tsc"
+    "prepare": "tsc"
   },
   "repository": {
     "type": "git",
