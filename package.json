@@ -1,6 +1,6 @@
 {
   "name": "simplify-logic-statement-ts",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Takes a logical statement and simplifies it.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
