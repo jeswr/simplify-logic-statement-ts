@@ -7,6 +7,9 @@
   "directories": {
     "lib": "lib"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "jest",
     "lint": "eslint lib/* --ext .ts",
