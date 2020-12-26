@@ -1,5 +1,5 @@
 import {
-  LogicalStatementType, AndStatement, LogicalStatementOutput, OrStatement,
+  LogicalStatementType, LogicalStatementOutput, OrStatement,
 } from '../types';
 import { applyCollectionElements } from './utils';
 
@@ -24,7 +24,7 @@ export function simplifyOr<T>(or: OrStatement<T>): LogicalStatementOutput<T> {
     if (not.length === 1) return not[0];
     if (and.length === 1) return and[0];
     if (xone.length === 1) return xone[0];
-    if (statement.length === 1) return statement[0];
+    return statement[0];
   }
 
   return {

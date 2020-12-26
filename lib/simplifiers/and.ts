@@ -7,7 +7,7 @@ export function simplifyAnd<T>(and: AndStatement<T>): LogicalStatementOutput<T> 
   // If one element of the and statement is always false, then the
   // whole statement is always false. Otherwise we do not care about
   // empty statements
-  if (applied.empty.some((element) => element.statement === false)) {
+  if (applied.empty.length > 0 && applied.empty.some((element) => element.statement === false)) {
     return { type: LogicalStatementType.empty, statement: false };
   }
 
@@ -22,7 +22,7 @@ export function simplifyAnd<T>(and: AndStatement<T>): LogicalStatementOutput<T> 
     if (not.length === 1) return not[0];
     if (or.length === 1) return or[0];
     if (xone.length === 1) return xone[0];
-    if (statement.length === 1) return statement[0];
+    return statement[0];
   }
 
   return {

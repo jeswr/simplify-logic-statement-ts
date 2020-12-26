@@ -2,23 +2,23 @@ import { LogicalStatementType, LogicalStatementOutput, XoneStatement } from '../
 import { simplifyNot } from './not';
 import { applyCollectionElements } from './utils';
 
-export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<T> {
-  const applied = applyCollectionElements(xone.statement);
+export function simplifyXone<T>(xoneS: XoneStatement<T>): LogicalStatementOutput<T> {
+  const applied = applyCollectionElements(xoneS.statement);
 
   let emptyCount = 0;
   for (const element of applied.empty) {
-    if (element.statement === true) {
+    if (emptyCount > 0) {
+      return { type: LogicalStatementType.empty, statement: false };
+    }
+    if (element.statement) {
       emptyCount += 1;
-      if (emptyCount > 1) {
-        return { type: LogicalStatementType.empty, statement: false };
-      }
     }
   }
 
   const {
-    not, and, or, statement,
+    not, and, or, statement, xone,
   } = applied;
-  const totalLength = not.length + and.length + or.length + statement.length;
+  const totalLength = not.length + and.length + or.length + statement.length + xone.length;
 
   if (totalLength === 0 && emptyCount === 1) {
     return { type: LogicalStatementType.empty, statement: true };
@@ -26,7 +26,10 @@ export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<
     if (not.length === 1) return not[0];
     if (and.length === 1) return and[0];
     if (or.length === 1) return or[0];
-    if (statement.length === 1) return statement[0];
+    if (xone.length === 1) return xone[0];
+    return statement[0];
+  } if (totalLength === 0 && emptyCount === 0) {
+    return { type: LogicalStatementType.empty, statement: false };
   }
 
   // If one statement is already arbitrarily true
@@ -38,7 +41,7 @@ export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<
       statement: {
         type: LogicalStatementType.and,
         statement: {
-          not, and, or, statement, xone: [],
+          not, and, or, statement, xone,
         },
       },
     });
@@ -47,7 +50,7 @@ export function simplifyXone<T>(xone: XoneStatement<T>): LogicalStatementOutput<
   return {
     type: LogicalStatementType.xone,
     statement: {
-      not, and, or, statement, xone: [],
+      not, and, or, statement, xone,
     },
   };
 }

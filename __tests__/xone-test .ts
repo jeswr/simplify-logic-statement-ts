@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
 import {
-  AndStatement, LogicalStatementCollection, LogicalStatementType, simplify,
+  AndStatement,
+  LogicalStatementCollection, LogicalStatementType, simplify, XoneStatement,
 } from '../lib';
-import { simplifyAnd } from '../lib/simplifiers/and';
+import { simplifyXone } from '../lib/simplifiers/xone';
 
 const collection: LogicalStatementCollection<string> = {
   [LogicalStatementType.and]: [],
@@ -18,44 +19,73 @@ const collection: LogicalStatementCollection<string> = {
   }],
 };
 
-const statement: () => AndStatement<string> = () => ({
-  type: LogicalStatementType.and,
+const statement: () => XoneStatement<string> = () => ({
+  type: LogicalStatementType.xone,
   statement: collection,
 });
 
-describe('and handler tests', () => {
+const emptyAnd: () => AndStatement<string> = () => ({
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.statement]: [],
+  },
+});
+
+describe('xone handler tests', () => {
   it('should mantain standard and statements', () => {
     expect(simplify(statement())).toEqual(statement());
-    expect(simplifyAnd(statement())).toEqual(statement());
+    expect(simplifyXone(statement())).toEqual(statement());
   });
 
-  it('should flatten nested ands', () => {
+  it('should *not* flatten nested xone', () => {
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
-        [LogicalStatementType.and]: [statement()],
+        [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [],
-        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.xone]: [statement(), statement()],
         [LogicalStatementType.statement]: [],
       },
-    })).toEqual(statement());
+    })).toEqual({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [statement(), statement()],
+        [LogicalStatementType.statement]: [],
+      },
+    });
 
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
-        [LogicalStatementType.and]: [statement()],
+        [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [],
-        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.xone]: [statement(), statement()],
         [LogicalStatementType.statement]: [],
       },
-    })).toEqual(statement());
+    })).toEqual({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [statement(), statement()],
+        [LogicalStatementType.statement]: [],
+      },
+    });
   });
 
   it('should extract single elements', () => {
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.or]: [],
@@ -71,7 +101,7 @@ describe('and handler tests', () => {
       statement: 'hello',
     });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.or]: [],
@@ -86,8 +116,8 @@ describe('and handler tests', () => {
       type: LogicalStatementType.statement,
       statement: 'hello',
     });
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.and]: [],
@@ -127,7 +157,7 @@ describe('and handler tests', () => {
       },
     });
     expect(simplify({
-      type: LogicalStatementType.or,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.and]: [],
@@ -166,11 +196,11 @@ describe('and handler tests', () => {
         }],
       },
     });
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
-        [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
+        [LogicalStatementType.and]: [],
         [LogicalStatementType.not]: [],
         [LogicalStatementType.xone]: [{
           type: LogicalStatementType.xone,
@@ -207,10 +237,10 @@ describe('and handler tests', () => {
       },
     });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
-        [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
+        [LogicalStatementType.and]: [],
         [LogicalStatementType.not]: [],
         [LogicalStatementType.xone]: [{
           type: LogicalStatementType.xone,
@@ -232,6 +262,86 @@ describe('and handler tests', () => {
       },
     })).toEqual({
       type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [{
+          type: LogicalStatementType.statement,
+          statement: 'hello',
+        }, {
+          type: LogicalStatementType.statement,
+          statement: 'hello2',
+        }],
+      },
+    });
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.and]: [{
+          type: LogicalStatementType.and,
+          statement: {
+            [LogicalStatementType.and]: [],
+            [LogicalStatementType.or]: [],
+            [LogicalStatementType.not]: [],
+            [LogicalStatementType.xone]: [],
+            [LogicalStatementType.statement]: [{
+              type: LogicalStatementType.statement,
+              statement: 'hello',
+            }, {
+              type: LogicalStatementType.statement,
+              statement: 'hello2',
+            }],
+          },
+        }],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({
+      type: LogicalStatementType.and,
+      statement: {
+        [LogicalStatementType.and]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [{
+          type: LogicalStatementType.statement,
+          statement: 'hello',
+        }, {
+          type: LogicalStatementType.statement,
+          statement: 'hello2',
+        }],
+      },
+    });
+    expect(simplify({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.and]: [{
+          type: LogicalStatementType.and,
+          statement: {
+            [LogicalStatementType.and]: [],
+            [LogicalStatementType.or]: [],
+            [LogicalStatementType.not]: [],
+            [LogicalStatementType.xone]: [],
+            [LogicalStatementType.statement]: [{
+              type: LogicalStatementType.statement,
+              statement: 'hello',
+            }, {
+              type: LogicalStatementType.statement,
+              statement: 'hello2',
+            }],
+          },
+        }],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({
+      type: LogicalStatementType.and,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -247,8 +357,8 @@ describe('and handler tests', () => {
       },
     });
     // This is more of an integration test tbh
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -273,7 +383,7 @@ describe('and handler tests', () => {
       statement: 'hello',
     });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -297,8 +407,8 @@ describe('and handler tests', () => {
       type: LogicalStatementType.statement,
       statement: 'hello',
     });
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -314,7 +424,7 @@ describe('and handler tests', () => {
       statement: 'hello',
     });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -329,8 +439,8 @@ describe('and handler tests', () => {
       type: LogicalStatementType.statement,
       statement: 'hello',
     });
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -353,9 +463,9 @@ describe('and handler tests', () => {
     });
   });
 
-  it('should handle empty and', () => {
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+  it('should handle empty xone', () => {
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
@@ -363,11 +473,34 @@ describe('and handler tests', () => {
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.statement]: [],
       },
-    })).toEqual({ type: LogicalStatementType.empty, statement: true });
+    })).toEqual({ type: LogicalStatementType.empty, statement: false });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({ type: LogicalStatementType.empty, statement: false });
+  });
+
+  it('should immediately make xone true when exactly 1 true statement is present', () => {
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd()],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({ type: LogicalStatementType.empty, statement: true });
+    expect(simplify({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd()],
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [],
         [LogicalStatementType.xone]: [],
@@ -376,46 +509,98 @@ describe('and handler tests', () => {
     })).toEqual({ type: LogicalStatementType.empty, statement: true });
   });
 
-  it('Returns an empty false when there is one empty false statement present', () => {
-    expect(simplifyAnd({
-      type: LogicalStatementType.and,
+  it('transform to not when 1 statment is true', () => {
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd()],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [{
+          type: LogicalStatementType.statement,
+          statement: 'hello',
+        }],
+      },
+    })).toEqual({
+      type: LogicalStatementType.not,
+      statement: {
+        type: LogicalStatementType.statement,
+        statement: 'hello',
+      },
+    });
+    expect(simplify({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd()],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [{
+          type: LogicalStatementType.statement,
+          statement: 'hello',
+        }],
+      },
+    })).toEqual({
+      type: LogicalStatementType.not,
+      statement: {
+        type: LogicalStatementType.statement,
+        statement: 'hello',
+      },
+    });
+  });
+
+  it('should immediately make xone false when 2 true statements are present', () => {
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd(), emptyAnd()],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({ type: LogicalStatementType.empty, statement: false });
+    expect(simplify({
+      type: LogicalStatementType.xone,
+      statement: {
+        [LogicalStatementType.and]: [emptyAnd(), emptyAnd()],
+        [LogicalStatementType.or]: [],
+        [LogicalStatementType.not]: [],
+        [LogicalStatementType.xone]: [],
+        [LogicalStatementType.statement]: [],
+      },
+    })).toEqual({ type: LogicalStatementType.empty, statement: false });
+  });
+
+  it('should immediately make xone false when 2 false statements and nothing else are present', () => {
+    expect(simplifyXone({
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [{
           type: LogicalStatementType.not,
-          statement: {
-            type: LogicalStatementType.and,
-            statement: {
-              [LogicalStatementType.and]: [],
-              [LogicalStatementType.not]: [],
-              [LogicalStatementType.or]: [],
-              [LogicalStatementType.xone]: [],
-              [LogicalStatementType.statement]: [],
-            },
-          },
+          statement: emptyAnd(),
+        }, {
+          type: LogicalStatementType.not,
+          statement: emptyAnd(),
         }],
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.statement]: [],
       },
     })).toEqual({ type: LogicalStatementType.empty, statement: false });
     expect(simplify({
-      type: LogicalStatementType.and,
+      type: LogicalStatementType.xone,
       statement: {
         [LogicalStatementType.and]: [],
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [{
           type: LogicalStatementType.not,
-          statement: {
-            type: LogicalStatementType.and,
-            statement: {
-              [LogicalStatementType.and]: [],
-              [LogicalStatementType.not]: [],
-              [LogicalStatementType.or]: [],
-              [LogicalStatementType.xone]: [],
-              [LogicalStatementType.statement]: [],
-            },
-          },
+          statement: emptyAnd(),
+        }, {
+          type: LogicalStatementType.not,
+          statement: emptyAnd(),
         }],
         [LogicalStatementType.xone]: [],
         [LogicalStatementType.statement]: [],

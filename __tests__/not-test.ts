@@ -91,26 +91,38 @@ describe('Not handler tests', () => {
     //   });
     // });
 
-    // expect(simplifyNot({
-    //   type: LogicalStatementType.not,
-    //   statement: {
-    //     type: LogicalStatementType.statement,
-    //     statement: true,
-    //   },
-    // })).toEqual({
-    //   type: LogicalStatementType.empty,
-    //   statement: false,
-    // });
+    expect(simplifyNot({
+      type: LogicalStatementType.not,
+      statement: {
+        type: LogicalStatementType.and,
+        statement: {
+          [LogicalStatementType.and]: [],
+          [LogicalStatementType.or]: [],
+          [LogicalStatementType.not]: [],
+          [LogicalStatementType.xone]: [],
+          [LogicalStatementType.statement]: [],
+        },
+      },
+    })).toEqual({
+      type: LogicalStatementType.empty,
+      statement: false,
+    });
 
-    // expect(simplifyNot({
-    //   type: LogicalStatementType.not,
-    //   statement: {
-    //     type: LogicalStatementType.statement,
-    //     statement: false,
-    //   },
-    // })).toEqual({
-    //   type: LogicalStatementType.empty,
-    //   statement: true,
-    // });
+    expect(simplifyNot({
+      type: LogicalStatementType.not,
+      statement: {
+        type: LogicalStatementType.or,
+        statement: {
+          [LogicalStatementType.and]: [],
+          [LogicalStatementType.or]: [],
+          [LogicalStatementType.not]: [],
+          [LogicalStatementType.xone]: [],
+          [LogicalStatementType.statement]: [],
+        },
+      },
+    })).toEqual({
+      type: LogicalStatementType.empty,
+      statement: true,
+    });
   });
 });

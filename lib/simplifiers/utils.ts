@@ -1,5 +1,8 @@
 import {
-  LogicalStatementCollection, LogicalStatementType, LogicalStatementCollectionUnprocessed, LogicalStatementOutput,
+  LogicalStatementCollection,
+  LogicalStatementType,
+  LogicalStatementCollectionUnprocessed,
+  LogicalStatementOutput,
 } from '../types';
 import { simplifyAnd } from './and';
 import { simplifyNot } from './not';
@@ -10,7 +13,10 @@ import { simplifyXone } from './xone';
  * Applies the simplification algorithm to a collection of statements.
  * @param collection Collection of logical statemnts
  */
-export function applyCollectionElements<T>(collection: LogicalStatementCollection<T>, merge?: LogicalStatementType.and | LogicalStatementType.or): LogicalStatementCollectionUnprocessed<T> {
+export function applyCollectionElements<T>(
+  collection: LogicalStatementCollection<T>,
+  merge?: LogicalStatementType.and | LogicalStatementType.or,
+): LogicalStatementCollectionUnprocessed<T> {
   const results: LogicalStatementCollectionUnprocessed<T> = {
     [LogicalStatementType.and]: [],
     [LogicalStatementType.or]: [],
@@ -47,28 +53,37 @@ export function applyCollectionElements<T>(collection: LogicalStatementCollectio
     }
   }
 
-  for (const elem of collection.and.map(simplifyAnd)) {
+  for (const elem of collection[LogicalStatementType.and].map(simplifyAnd)) {
     pusher(elem);
   }
-  for (const elem of collection.or.map(simplifyOr)) {
+  for (const elem of collection[LogicalStatementType.or].map(simplifyOr)) {
     pusher(elem);
   }
-  for (const elem of collection.xone.map(simplifyXone)) {
+  for (const elem of collection[LogicalStatementType.xone].map(simplifyXone)) {
     pusher(elem);
   }
-  for (const elem of collection.not.map(simplifyNot)) {
+  for (const elem of collection[LogicalStatementType.not].map(simplifyNot)) {
     pusher(elem);
   }
-
   /**
    * Used to merge nested ands/ors
    */
   if (merge) {
-    for (const elem of results[merge]) {
-      pusher(elem);
+    // Note we need to make a copy first to
+    // prevent infinite looping behavior
+    for (const elem of [...results[merge]]) {
+      for (const key of [
+        LogicalStatementType.and,
+        LogicalStatementType.or,
+        LogicalStatementType.xone,
+        LogicalStatementType.not,
+        LogicalStatementType.statement,
+      ]) {
+        // @ts-ignore
+        results[key] = [...results[key], ...elem.statement[key]];
+      }
     }
     results[merge] = [];
   }
-
   return results;
 }
