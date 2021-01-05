@@ -5,6 +5,123 @@ Takes a logical statement and simplifies it.
 
 Apply the *simplify* function to one of the types outlined below.
 
+### Examples
+
+#### Remove double negation
+
+```ts
+import { simplify, NotStatement } from 'simplify-logic-statement-ts'
+
+const myNotStatement: NotStatment<string> = {
+  type: LogicalStatementType.not,
+  statement: {
+    LogicalStatementType.not,
+    statement: {
+      LogicalStatementType.statement,
+      statement: 'statement 3',
+    },
+  },
+}
+
+simplify(myNotStatement) // { LogicalStatementType.statement, statement: 'statement 3' }
+```
+
+#### Remove unecessary quantifiers
+
+```ts
+import { simplify, AndStatement } from 'simplify-logic-statement-ts'
+
+const myAndStatement: AndStatement<string> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.statement]: [{
+      type: LogicalStatementType.statement,
+      statement: 'hello',
+    }],
+  },
+}
+
+simplify(myAndStatement) // { type: LogicalStatementType.statement, statement: 'hello' };
+```
+### Flatten nested logic
+
+```ts
+import { simplify, AndStatement } from 'simplify-logic-statement-ts'
+
+const myAndStatement: AndStatement<string> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.statement]: [{
+      type: LogicalStatementType.statement,
+      statement: 'hello',
+    }, {
+      type: LogicalStatementType.statement,
+      statement: 'hello again',
+    }],
+  },
+}
+
+const anotherAndStatement: AndStatement<string> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.statement]: [{
+      type: LogicalStatementType.statement,
+      statement: 'goodbye',
+    }, {
+      type: LogicalStatementType.statement,
+      statement: 'goodbye again',
+    }],
+  },
+}
+
+const myNestedAndStatement: AndStatement<string> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [myAndStatement, anotherAndStatement],
+    [LogicalStatementType.statement]: [],
+  },
+}
+
+simplify(myNestedAndStatement)
+// {
+//   type: LogicalStatementType.and,
+//   statement: {
+//    [LogicalStatementType.xone]: [],
+//    [LogicalStatementType.or]: [],
+//    [LogicalStatementType.not]: [],
+//    [LogicalStatementType.and]: [],
+//    [LogicalStatementType.statement]: [{
+//      type: LogicalStatementType.statement,
+//      statement: 'hello',
+//    }, {
+//      type: LogicalStatementType.statement,
+//      statement: 'hello again',
+//    }, {
+//      type: LogicalStatementType.statement,
+//      statement: 'goodbye',
+//    }, {
+//      type: LogicalStatementType.statement,
+//      statement: 'goodbye again',
+//    }],
+//  },
+// }
+```
+
 ## Types
 
 ### Base Statement
@@ -23,9 +140,13 @@ A negated statement
 
 ```ts
 import { LogicalStatementType, NotStatment } from 'simplify-logic-statement-ts'
+
 const myNotStatement: NotStatment<string> = {
   type: LogicalStatementType.not,
-  statement: 'statement 3',
+  statement: {
+    LogicalStatementType.statement,
+    statement: 'statement 3',
+  },
 }
 ```
 
