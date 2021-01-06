@@ -65,6 +65,6 @@
     "test"
   ],
   "release": {
-    "branches": ["master"]
+    "branches": ["main"]
   }
 }
