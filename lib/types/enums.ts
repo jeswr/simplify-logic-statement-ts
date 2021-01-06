@@ -4,7 +4,7 @@
  * Note that empty should not be necessary for any inputs.
  */
 // eslint-disable-next-line no-shadow
-export const enum LogicalStatementType {
+export enum LogicalStatementType {
   and = 'and',
   or = 'or',
   xone = 'xone',
