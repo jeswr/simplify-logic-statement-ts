@@ -63,5 +63,8 @@
     "lint",
     "build",
     "test"
-  ]
+  ],
+  "release": {
+    "branches": ["master"]
+  }
 }
