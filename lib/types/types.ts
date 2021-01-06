@@ -21,8 +21,6 @@ export interface LogicalStatementCollectionUnprocessed<T> extends LogicalStateme
   [LogicalStatementType.empty]: EmptyStatement[];
 }
 
-// In the case of Schimatos a node shape or property shape
-// always originates at an and statement
 export interface AndStatement<T> {
   type: LogicalStatementType.and;
   statement: LogicalStatementCollection<T>;
