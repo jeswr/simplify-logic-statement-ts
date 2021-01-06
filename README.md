@@ -242,3 +242,7 @@ const myEmptyStatement: EmptyStatement = {
   statement: true,
 }
 ```
+
+## License
+
+This package is licensed under the [MIT License](https://github.com/jeswr/simplify-logic-statement-ts/blob/main/LICENSE)
