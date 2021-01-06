@@ -11,7 +11,7 @@ export interface LogicalStatementCollection<T> {
   [LogicalStatementType.or]: OrStatement<T>[];
   [LogicalStatementType.xone]: XoneStatement<T>[];
   [LogicalStatementType.not]: NotStatement<T>[];
-  [LogicalStatementType.statement]: Statment<T>[];
+  [LogicalStatementType.statement]: Statement<T>[];
 }
 
 /**
@@ -50,7 +50,7 @@ export interface EmptyStatement {
   statement: boolean;
 }
 
-export interface Statment<T> {
+export interface Statement<T> {
   type: LogicalStatementType.statement;
   statement: T;
   // Optional method to test if two statements are equal
@@ -62,6 +62,6 @@ export type LogicalStatement<T> =
   | OrStatement<T>
   | XoneStatement<T>
   | NotStatement<T>
-  | Statment<T>;
+  | Statement<T>;
 
 export type LogicalStatementOutput<T> = LogicalStatement<T> | EmptyStatement;
