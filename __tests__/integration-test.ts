@@ -31,6 +31,28 @@ describe('integration test with build-logic-statement-ts', () => {
     expect(andStatement.build()).not.toEqual(simplified.build());
     expect(simplify<string>(andStatement.build())).toEqual(simplified.build());
   });
+  it('should not flatten ands and ors with 1 element but not ors nested in ands', () => {
+    const andStatement = new AndBuilder<string>();
+    const nestedAnd = andStatement.addAnd();
+    nestedAnd.addStatement('hello1');
+    nestedAnd.addStatement('hello2');
+    const nestedOr = andStatement.addOr();
+    nestedOr.addStatement('hello3');
+    nestedOr.addStatement('hello4');
+    andStatement.addOr().addStatement('hello6');
+    andStatement.addOr().addStatement('hello7');
+
+    const simplified = new AndBuilder<string>();
+    simplified.addStatement('hello6');
+    simplified.addStatement('hello7');
+    simplified.addStatement('hello1');
+    simplified.addStatement('hello2');
+    const nestedOrSimplified = simplified.addOr();
+    nestedOrSimplified.addStatement('hello3');
+    nestedOrSimplified.addStatement('hello4');
+    expect(andStatement.build()).not.toEqual(simplified.build());
+    expect(simplify<string>(andStatement.build())).toEqual(simplified.build());
+  });
   it('should not flatten ors nested in ands', () => {
     const simplified = new AndBuilder<string>();
     simplified.addStatement('hello1');
