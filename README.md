@@ -5,6 +5,8 @@ Takes a logical statement and simplifies it.
 
 Apply the *simplify* function to one of the types outlined below.
 
+![Node.js CI](https://github.com/jeswr/simplify-logic-statement-ts/workflows/Node.js%20CI/badge.svg)
+
 ### Examples
 
 #### Remove double negation
