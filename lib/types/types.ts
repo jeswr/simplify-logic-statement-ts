@@ -55,6 +55,8 @@ export interface Statement<T> {
   statement: T;
   // Optional method to test if two statements are equal
   equal?: (left: T, right: T) => boolean;
+  mergeable?: (left: T, right: T) => boolean;
+  merge?: (left: T, right: T) => T;
 }
 
 export type LogicalStatement<T> =
