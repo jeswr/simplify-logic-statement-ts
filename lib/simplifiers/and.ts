@@ -36,7 +36,7 @@ export function simplifyAnd<T>(and: AndStatement<T>): LogicalStatementOutput<T> 
         if (elem1.merge && elem1.mergeable?.(elem1.statement, elem2.statement)) {
           merged[i] = {
             ...elem1,
-            statement: elem1.merge?.(elem1.statement, elem2.statement),
+            statement: elem1.merge(elem1.statement, elem2.statement),
           };
           mergable = true;
           toAdd = false;
@@ -45,7 +45,7 @@ export function simplifyAnd<T>(and: AndStatement<T>): LogicalStatementOutput<T> 
         if (elem2.merge && elem2.mergeable?.(elem1.statement, elem2.statement)) {
           merged[i] = {
             ...elem2,
-            statement: elem2.merge?.(elem1.statement, elem2.statement),
+            statement: elem2.merge(elem1.statement, elem2.statement),
           };
           mergable = true;
           toAdd = false;
