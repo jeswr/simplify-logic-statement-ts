@@ -122,6 +122,63 @@ simplify(myNestedAndStatement)
 // }
 ```
 
+### Using the `.equals` method
+```ts
+import { simplify, AndStatement } from 'simplify-logic-statement-ts'
+
+const myAndStatement: AndStatement<string> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.statement]: [{
+      type: LogicalStatementType.statement,
+      statement: 'hello',
+      equals(l: string, r: string) {
+        return l === r;
+      }
+    }, {
+      type: LogicalStatementType.statement,
+      statement: 'hello',
+    }],
+  },
+}
+
+simplify(myAndStatement) // { type: LogicalStatementType.statement, statement: 'hello' };
+```
+
+### Using the `.mergable` and `.merge` methods
+```ts
+import { simplify, AndStatement } from 'simplify-logic-statement-ts'
+
+const myAndStatement: AndStatement<boolean> = {
+  type: LogicalStatementType.and,
+  statement: {
+    [LogicalStatementType.xone]: [],
+    [LogicalStatementType.or]: [],
+    [LogicalStatementType.not]: [],
+    [LogicalStatementType.and]: [],
+    [LogicalStatementType.statement]: [{
+      type: LogicalStatementType.statement,
+      statement: true,
+      merge(l: boolean, r: boolean) {
+        return l && r;
+      },
+      mergeable(l: boolean, r: boolean) {
+        return typeof l === 'boolean' && typeof r === 'boolean';
+      }
+    }, {
+      type: LogicalStatementType.statement,
+      statement: false,
+    }],
+  },
+}
+
+simplify(myAndStatement) // { type: LogicalStatementType.statement, statement: false };
+```
+
 ## Types
 
 ### Base Statement
