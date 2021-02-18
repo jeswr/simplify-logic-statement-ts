@@ -5,6 +5,13 @@ Takes a logical statement and simplifies it.
 
 Apply the *simplify* function to one of the types outlined below.
 
+[![GitHub license](https://img.shields.io/github/license/jeswr/useState.svg)](https://github.com/jeswr/simplify-logic-statement-ts/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/simplify-logic-statement-ts.svg)](https://www.npmjs.com/package/simplify-logic-statement-ts)
+[![build](https://img.shields.io/github/workflow/status/jeswr/simplify-logic-statement-ts/Node.js%20CI)](https://github.com/jeswr/simplify-logic-statement-ts/tree/main/)
+[![Dependabot](https://badgen.net/badge/Dependabot/enabled/green?icon=dependabot)](https://dependabot.com/)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+![npm bundle size](https://img.shields.io/bundlephobia/min/simplify-logic-statement-ts)
+
 ### Examples
 
 #### Remove double negation
@@ -302,4 +309,5 @@ const myEmptyStatement: EmptyStatement = {
 
 ## License
 
-This package is licensed under the [MIT License](https://github.com/jeswr/simplify-logic-statement-ts/blob/main/LICENSE)
+©2021–present
+[Jesse Wright](https://github.com/jeswr), (https://github.com/jeswr/simplify-logic-statement-ts/blob/main/LICENSE).
