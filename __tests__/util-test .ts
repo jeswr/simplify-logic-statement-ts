@@ -10,10 +10,10 @@ describe('util error tests', () => {
         [LogicalStatementType.or]: [],
         [LogicalStatementType.not]: [{
           type: LogicalStatementType.not,
-          // @ts-ignore
           statement: {
             type: LogicalStatementType.not,
             statement: {
+              // @ts-expect-error
               type: 'INVALID KEY',
               statement: 'myValue',
             },
